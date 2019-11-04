@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tic Tac Toe</title>
+    <style>
+        /* input fields */
+        label {
+            width: 5em;
+            height: 5em;
+            position: absolute;
+
+        }
+
+        input {
+            visibility: hidden;
+            position: absolute;
+        }
+
+        label::before {
+            content: "_";
+        }
+
+        input.p1:checked+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+label::before {
+            content: "x";
+            background-color: red;
+        }
+
+        input.p2:checked+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+label::before {
+            content: "o";
+            background-color: lightblue;
+        }
+
+        /* position fields */
+        .y1 {
+            top: 10em;
+        }
+
+        .y2 {
+            top: 15em;
+        }
+
+        .y3 {
+            top: 20em;
+        }
+
+        .x1 {
+            left: 10em;
+        }
+
+        .x2 {
+            left: 15em;
+        }
+
+        .x3 {
+            left: 20em;
+        }
+
+        .win-p1,
+        .win-p2,
+        .tie {
+            display: none;
+        }
+
+        /* signal game over */
+        input.p1.x1:checked+input.p1.x2:checked+input.p1.x3:checked~.win-p1,
+        input.p1.y1:checked+input+input+input.p1.y2:checked+input+input+input.p1.y3:checked~.win-p1,
+        #p1f1:checked~#p1f5:checked~#p1f9:checked~.win-p1,
+        #p1f3:checked~#p1f5:checked~#p1f7:checked~.win-p1,
+        input.p2.x1:checked+input.p2.x2:checked+input.p2.x3:checked~.win-p2,
+        input.p2.y1:checked+input+input+input.p2.y2:checked+input+input+input.p2.y3:checked~.win-p2,
+        #p2f1:checked~#p2f5:checked~#p2f9:checked~.win-p2,
+        #p2f3:checked~#p2f5:checked~#p2f7:checked~.win-p2,
+        input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~.tie {
+            display: block;
+        }
+
+        /* disable fields on game over */
+        input.p1.x1:checked+input.p1.x2:checked+input.p1.x3:checked~label,
+        input.p1.y1:checked+input+input+input.p1.y2:checked+input+input+input.p1.y3:checked~label,
+        #p1f1:checked~#p1f5:checked~#p1f9:checked~label,
+        #p1f3:checked~#p1f5:checked~#p1f7:checked~label,
+        input.p2.x1:checked+input.p2.x2:checked+input.p2.x3:checked~label,
+        input.p2.y1:checked+input+input+input.p2.y2:checked+input+input+input.p2.y3:checked~label,
+        #p2f1:checked~#p2f5:checked~#p2f9:checked~label,
+        #p2f3:checked~#p2f5:checked~#p2f7:checked~label,
+        input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~label,
+
+        /* disable already selected fields */
+        input.f1:checked~label.f1,
+        input.f2:checked~label.f2,
+        input.f3:checked~label.f3,
+        input.f4:checked~label.f4,
+        input.f5:checked~label.f5,
+        input.f6:checked~label.f6,
+        input.f7:checked~label.f7,
+        input.f8:checked~label.f8,
+        input.f9:checked~label.f9 {
+            pointer-events: none !important
+        }
+
+        /* move 1 */
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2 {
+            pointer-events: none;
+        }
+
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2 {
+            pointer-events: auto;
+        }
+
+        /* move 2 */
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2 {
+            pointer-events: none;
+        }
+
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2 {
+            pointer-events: auto;
+        }
+
+        /* move 3 */
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2 {
+            pointer-events: none;
+        }
+
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2 {
+            pointer-events: auto;
+        }
+
+        /* move 4 */
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:not(:checked)+#p2f2:checked+#p2f3:checked+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:not(:checked)+#p2f3:checked+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:not(:checked)+#p2f5:checked+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:not(:checked)+#p2f4:checked+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:checked~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:checked+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:checked+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:not(:checked)+#p2f6:checked+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:checked+#p2f4:not(:checked)+#p2f5:checked+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2,
+        #p2f1:checked+#p2f2:checked+#p2f3:checked+#p2f4:checked+#p2f5:not(:checked)+#p2f6:not(:checked)+#p2f7:not(:checked)+#p2f8:not(:checked)+#p2f9:not(:checked)~.p2 {
+            pointer-events: none;
+        }
+
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:not(:checked)+#p1f2:checked+#p1f3:checked+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:not(:checked)+#p1f3:checked+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:not(:checked)+#p1f5:checked+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:not(:checked)+#p1f4:checked+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:checked~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:checked+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:checked+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:not(:checked)+#p1f6:checked+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:checked+#p1f4:not(:checked)+#p1f5:checked+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2,
+        #p1f1:checked+#p1f2:checked+#p1f3:checked+#p1f4:checked+#p1f5:not(:checked)+#p1f6:not(:checked)+#p1f7:not(:checked)+#p1f8:not(:checked)+#p1f9:not(:checked)~.p2 {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tic Tac Toe</h1>
+
+    <input type="radio" id="p1f1" class="p1 f1 x1 y1" autocomplete="off">
+    <input type="radio" id="p1f2" class="p1 f2 x2 y1" autocomplete="off">
+    <input type="radio" id="p1f3" class="p1 f3 x3 y1" autocomplete="off">
+    <input type="radio" id="p1f4" class="p1 f4 x1 y2" autocomplete="off">
+    <input type="radio" id="p1f5" class="p1 f5 x2 y2" autocomplete="off">
+    <input type="radio" id="p1f6" class="p1 f6 x3 y2" autocomplete="off">
+    <input type="radio" id="p1f7" class="p1 f7 x1 y3" autocomplete="off">
+    <input type="radio" id="p1f8" class="p1 f8 x2 y3" autocomplete="off">
+    <input type="radio" id="p1f9" class="p1 f9 x3 y3" autocomplete="off">
+    <input type="radio" id="p2f1" class="p2 f1 x1 y1" autocomplete="off">
+    <input type="radio" id="p2f2" class="p2 f2 x2 y1" autocomplete="off">
+    <input type="radio" id="p2f3" class="p2 f3 x3 y1" autocomplete="off">
+    <input type="radio" id="p2f4" class="p2 f4 x1 y2" autocomplete="off">
+    <input type="radio" id="p2f5" class="p2 f5 x2 y2" autocomplete="off">
+    <input type="radio" id="p2f6" class="p2 f6 x3 y2" autocomplete="off">
+    <input type="radio" id="p2f7" class="p2 f7 x1 y3" autocomplete="off">
+    <input type="radio" id="p2f8" class="p2 f8 x2 y3" autocomplete="off">
+    <input type="radio" id="p2f9" class="p2 f9 x3 y3" autocomplete="off">
+
+    <label for="p1f1" class="p1 f1 x1 y1"></label>
+    <label for="p1f2" class="p1 f2 x2 y1"></label>
+    <label for="p1f3" class="p1 f3 x3 y1"></label>
+    <label for="p1f4" class="p1 f4 x1 y2"></label>
+    <label for="p1f5" class="p1 f5 x2 y2"></label>
+    <label for="p1f6" class="p1 f6 x3 y2"></label>
+    <label for="p1f7" class="p1 f7 x1 y3"></label>
+    <label for="p1f8" class="p1 f8 x2 y3"></label>
+    <label for="p1f9" class="p1 f9 x3 y3"></label>
+    <label for="p2f1" class="p2 f1 x1 y1"></label>
+    <label for="p2f2" class="p2 f2 x2 y1"></label>
+    <label for="p2f3" class="p2 f3 x3 y1"></label>
+    <label for="p2f4" class="p2 f4 x1 y2"></label>
+    <label for="p2f5" class="p2 f5 x2 y2"></label>
+    <label for="p2f6" class="p2 f6 x3 y2"></label>
+    <label for="p2f7" class="p2 f7 x1 y3"></label>
+    <label for="p2f8" class="p2 f8 x2 y3"></label>
+    <label for="p2f9" class="p2 f9 x3 y3"></label>
+
+    <div class="win-p1">Player X won.</div>
+    <div class="win-p2">Player O won.</div>
+    <div class="tie">Tie!</div>
+
+    <a href="">New Game</a>
+
+</body>
+
+</html>

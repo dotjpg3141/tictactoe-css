@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Generator</title>
+</head>
+
+<body>
+    <code id="generated"></code>
+    <script>
+        let selectorsByIndex = [];
+
+        for (let index = 1; index < 2 ** 9; index++) {
+            let binary = index.toString(2).padStart(9, "0");
+
+            let count1 = 0;
+            for (const c of binary) { if (c === '1') count1++; }
+
+            let selector = "";
+            let itemIndex = 1;
+            let itemSeperator = "";
+            for (const c of binary) {
+                selector += itemSeperator + "#p2f" + itemIndex++;
+                selector += c === '1' ? ":checked" : ":not(:checked)";
+                itemSeperator = "+";
+            }
+
+            let selectors = selectorsByIndex[count1] || (selectorsByIndex[count1] = []);
+            selectors.push(selector);
+        }
+
+        let result = "";
+        for (let index = 1; index < 5; index++) {
+            result += "/* move " + index + " */\r\n";
+
+            const selectors = selectorsByIndex[index];
+            let joinedSelector = selectors.map(s => s + "~.p2").join(",\r\n");
+            result += joinedSelector + "\r\n{ pointer-events: none; }\r\n";
+
+            joinedSelector = joinedSelector.replace(/#p2/g, "#p1");
+            result += joinedSelector + "\r\n{ pointer-events: auto; }\r\n";
+        }
+
+        document.getElementById("generated").innerText = result;
+    </script>
+</body>
+
+</html>
