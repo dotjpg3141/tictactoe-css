@@ -125,6 +125,18 @@
             display: block;
         }
 
+        /* hide tie of a plyer won the game */
+        input.p1.x1:checked+input.p1.x2:checked+input.p1.x3:checked~.tie,
+        input.p1.y1:checked+input+input+input.p1.y2:checked+input+input+input.p1.y3:checked~.tie,
+        #p1f1:checked~#p1f5:checked~#p1f9:checked~.tie,
+        #p1f3:checked~#p1f5:checked~#p1f7:checked~.tie,
+        input.p2.x1:checked+input.p2.x2:checked+input.p2.x3:checked~.tie,
+        input.p2.y1:checked+input+input+input.p2.y2:checked+input+input+input.p2.y3:checked~.tie,
+        #p2f1:checked~#p2f5:checked~#p2f9:checked~.tie,
+        #p2f3:checked~#p2f5:checked~#p2f7:checked~.tie {
+            display: none !important;
+        }
+
         /* disable fields on game over */
         input.p1.x1:checked+input.p1.x2:checked+input.p1.x3:checked~label,
         input.p1.y1:checked+input+input+input.p1.y2:checked+input+input+input.p1.y3:checked~label,
