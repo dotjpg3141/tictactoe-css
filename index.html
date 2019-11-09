@@ -7,6 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Tic Tac Toe</title>
     <style>
+        .line {
+            font-size: 2em;
+        }
+
+        .line .player {
+            font-weight: bolder;
+            font-size: 5vmin;
+            vertical-align: middle;
+        }
+
         /* input fields */
         label {
             width: 22vmin;
@@ -14,11 +24,46 @@
             position: absolute;
             display: block;
             cursor: pointer;
-            border: 1px solid black;
             text-align: center;
             line-height: 22vmin;
             font-size: 22vmin;
             font-weight: bolder;
+        }
+
+        .bar {
+            background-color: black;
+            width: 0.5vmin;
+            height: 0.5vmin;
+            position: absolute;
+            left: 15vmin;
+        }
+
+        .bar-v1,
+        .bar-v2 {
+            top: 17vmin;
+            height: 70vmin;
+        }
+
+        .bar-v1 {
+            left: 39vmin;
+        }
+
+        .bar-v2 {
+            left: 65vmin;
+        }
+
+        .bar-h1,
+        .bar-h2 {
+            left: 17vmin;
+            width: 70vmin;
+        }
+
+        .bar-h1 {
+            top: 39vmin;
+        }
+
+        .bar-h2 {
+            top: 65vmin;
         }
 
         input {
@@ -645,7 +690,7 @@
 </head>
 
 <body>
-    <h1>Tic Tac Toe</h1>
+    <h1 class="line">Tic Tac Toe</h1>
 
     <input type="radio" id="p1f1" class="p1 f1 x1 y1" autocomplete="off">
     <input type="radio" id="p1f2" class="p1 f2 x2 y1" autocomplete="off">
@@ -685,12 +730,15 @@
     <label for="p2f8" class="p2 f8 x2 y3"></label>
     <label for="p2f9" class="p2 f9 x3 y3"></label>
 
-    <div class="win-p1">Player X won.</div>
-    <div class="win-p2">Player O won.</div>
-    <div class="tie">Tie!</div>
+    <div class="bar bar-v1"></div>
+    <div class="bar bar-v2"></div>
+    <div class="bar bar-h1"></div>
+    <div class="bar bar-h2"></div>
 
-    <a href="">New Game</a>
-
+    <a class="line" href="">🔄 New Game</a>
+    <div class="line win-p1">Player <span class="player" style="color:red">×</span> won.</div>
+    <div class="line win-p2">Player <span class="player" style="color:blue">○</span> won.</div>
+    <div class="line tie">Tie!</div>
 </body>
 
 </html>
