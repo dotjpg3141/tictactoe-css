@@ -23,7 +23,7 @@
             let itemIndex = 1;
             let itemSeperator = "";
             for (const c of binary) {
-                selector += itemSeperator + "#p2f" + itemIndex++;
+                selector += itemSeperator + "#o" + itemIndex++;
                 selector += c === '1' ? ":checked" : ":not(:checked)";
                 itemSeperator = "+";
             }
@@ -37,10 +37,10 @@
             result += "/* move " + index + " */\r\n";
 
             const selectors = selectorsByIndex[index];
-            let joinedSelector = selectors.map(s => s + "~.p2").join(",\r\n");
+            let joinedSelector = selectors.map(s => s + "~.o").join(",\r\n");
             result += joinedSelector + "\r\n{ pointer-events: none; }\r\n";
 
-            joinedSelector = joinedSelector.replace(/#p2/g, "#p1");
+            joinedSelector = joinedSelector.replace(/#o/g, "#x");
             result += joinedSelector + "\r\n{ pointer-events: auto; }\r\n";
         }
 
