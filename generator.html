@@ -38,10 +38,10 @@
 
             const selectors = selectorsByIndex[index];
             let joinedSelector = selectors.map(s => s + "~.o").join(",\r\n");
-            result += joinedSelector + "\r\n{ pointer-events: none; }\r\n";
+            result += joinedSelector + "\r\n{ pointer-events: none; width: 0; height: 0; }\r\n";
 
             joinedSelector = joinedSelector.replace(/#o/g, "#x");
-            result += joinedSelector + "\r\n{ pointer-events: auto; }\r\n";
+            result += joinedSelector + "\r\n{ pointer-events: auto; width: 200vmin; height: unset; }\r\n";
         }
 
         document.getElementById("generated").innerText = result;

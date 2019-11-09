@@ -17,10 +17,32 @@
             vertical-align: middle;
         }
 
+        .win-x,
+        .win-o,
+        .tie {
+            display: none;
+        }
+
+        /* show current player */
+        body {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .current {
+            display: inline-block !important;
+        }
+
+        .o {
+            width: 200vmin;
+            overflow: hidden;
+        }
+
         /* input fields */
-        label {
-            width: 22vmin;
-            height: 22vmin;
+        label.x,
+        label.o {
+            width: 22vmin !important;
+            height: 22vmin !important;
             position: absolute;
             display: block;
             cursor: pointer;
@@ -70,11 +92,7 @@
             left: 67vmin;
         }
 
-        .win-x,
-        .win-o,
-        .tie {
-            display: none;
-        }
+
 
         /* signal game over */
         input.x.x1:checked+input.x.x2:checked+input.x.x3:checked~.win-x,
@@ -89,7 +107,7 @@
             display: block;
         }
 
-        /* hide tie of a plyer won the game */
+        /* hide tie if a player won the game */
         input.x.x1:checked+input.x.x2:checked+input.x.x3:checked~.tie,
         input.x.y1:checked+input+input+input.x.y2:checked+input+input+input.x.y3:checked~.tie,
         #x1:checked~#x5:checked~#x9:checked~.tie,
@@ -97,7 +115,10 @@
         input.o.x1:checked+input.o.x2:checked+input.o.x3:checked~.tie,
         input.o.y1:checked+input+input+input.o.y2:checked+input+input+input.o.y3:checked~.tie,
         #o1:checked~#o5:checked~#o9:checked~.tie,
-        #o3:checked~#o5:checked~#o7:checked~.tie {
+        #o3:checked~#o5:checked~#o7:checked~.tie,
+
+        /* hide current player text if game over */
+        input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~input:checked~.current {
             display: none !important;
         }
 
@@ -136,6 +157,8 @@
         #o1:not(:checked)+#o2:checked+#o3:not(:checked)+#o4:not(:checked)+#o5:not(:checked)+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o,
         #o1:checked+#o2:not(:checked)+#o3:not(:checked)+#o4:not(:checked)+#o5:not(:checked)+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o {
             pointer-events: none;
+            width: 0;
+            height: 0;
         }
 
         #x1:not(:checked)+#x2:not(:checked)+#x3:not(:checked)+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:checked~.o,
@@ -148,6 +171,8 @@
         #x1:not(:checked)+#x2:checked+#x3:not(:checked)+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o,
         #x1:checked+#x2:not(:checked)+#x3:not(:checked)+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o {
             pointer-events: auto;
+            width: 200vmin;
+            height: unset;
         }
 
         /* move 2 */
@@ -188,6 +213,8 @@
         #o1:checked+#o2:not(:checked)+#o3:checked+#o4:not(:checked)+#o5:not(:checked)+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o,
         #o1:checked+#o2:checked+#o3:not(:checked)+#o4:not(:checked)+#o5:not(:checked)+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o {
             pointer-events: none;
+            width: 0;
+            height: 0;
         }
 
         #x1:not(:checked)+#x2:not(:checked)+#x3:not(:checked)+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:checked+#x9:checked~.o,
@@ -227,6 +254,8 @@
         #x1:checked+#x2:not(:checked)+#x3:checked+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o,
         #x1:checked+#x2:checked+#x3:not(:checked)+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o {
             pointer-events: auto;
+            width: 200vmin;
+            height: unset;
         }
 
         /* move 3 */
@@ -315,6 +344,8 @@
         #o1:checked+#o2:checked+#o3:not(:checked)+#o4:checked+#o5:not(:checked)+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o,
         #o1:checked+#o2:checked+#o3:checked+#o4:not(:checked)+#o5:not(:checked)+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o {
             pointer-events: none;
+            width: 0;
+            height: 0;
         }
 
         #x1:not(:checked)+#x2:not(:checked)+#x3:not(:checked)+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:checked+#x8:checked+#x9:checked~.o,
@@ -402,6 +433,8 @@
         #x1:checked+#x2:checked+#x3:not(:checked)+#x4:checked+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o,
         #x1:checked+#x2:checked+#x3:checked+#x4:not(:checked)+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o {
             pointer-events: auto;
+            width: 200vmin;
+            height: unset;
         }
 
         /* move 4 */
@@ -532,6 +565,8 @@
         #o1:checked+#o2:checked+#o3:checked+#o4:not(:checked)+#o5:checked+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o,
         #o1:checked+#o2:checked+#o3:checked+#o4:checked+#o5:not(:checked)+#o6:not(:checked)+#o7:not(:checked)+#o8:not(:checked)+#o9:not(:checked)~.o {
             pointer-events: none;
+            width: 0;
+            height: 0;
         }
 
         #x1:not(:checked)+#x2:not(:checked)+#x3:not(:checked)+#x4:not(:checked)+#x5:not(:checked)+#x6:checked+#x7:checked+#x8:checked+#x9:checked~.o,
@@ -661,7 +696,10 @@
         #x1:checked+#x2:checked+#x3:checked+#x4:not(:checked)+#x5:checked+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o,
         #x1:checked+#x2:checked+#x3:checked+#x4:checked+#x5:not(:checked)+#x6:not(:checked)+#x7:not(:checked)+#x8:not(:checked)+#x9:not(:checked)~.o {
             pointer-events: auto;
+            width: 200vmin;
+            height: unset;
         }
+
 
         /* draw cross # */
         .bar {
@@ -749,9 +787,13 @@
     <div class="bar bar-h2"></div>
 
     <a class="line" href="">🔄 New Game</a>
+    <br>
+    <div class="line tie current o">Current Player: <span class="player" style="color:blue">○</span></div>
+    <div class="line tie current">Current Player: <span class="player" style="color:red">×</span></div>
     <div class="line win-x">Player <span class="player" style="color:red">×</span> won.</div>
     <div class="line win-o">Player <span class="player" style="color:blue">○</span> won.</div>
-    <div class="line tie">Tie!</div>
+    <div class="line tie"> Tie! </div>
+
 </body>
 
 </html>
