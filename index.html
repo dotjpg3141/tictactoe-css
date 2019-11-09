@@ -9,10 +9,16 @@
     <style>
         /* input fields */
         label {
-            width: 5em;
-            height: 5em;
+            width: 22vmin;
+            height: 22vmin;
             position: absolute;
-
+            display: block;
+            cursor: pointer;
+            border: 1px solid black;
+            text-align: center;
+            line-height: 22vmin;
+            font-size: 22vmin;
+            font-weight: bolder;
         }
 
         input {
@@ -20,43 +26,39 @@
             position: absolute;
         }
 
-        label::before {
-            content: "_";
-        }
-
         input.p1:checked+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+label::before {
-            content: "x";
-            background-color: red;
+            color: red;
+            content: "×";
         }
 
         input.p2:checked+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+label::before {
-            content: "o";
-            background-color: lightblue;
+            color: blue;
+            content: "○";
         }
 
         /* position fields */
         .y1 {
-            top: 10em;
+            top: 15vmin;
         }
 
         .y2 {
-            top: 15em;
+            top: 41vmin;
         }
 
         .y3 {
-            top: 20em;
+            top: 67vmin;
         }
 
         .x1 {
-            left: 10em;
+            left: 15vmin;
         }
 
         .x2 {
-            left: 15em;
+            left: 41vmin;
         }
 
         .x3 {
-            left: 20em;
+            left: 67vmin;
         }
 
         .win-p1,
